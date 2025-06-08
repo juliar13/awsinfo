@@ -12,8 +12,8 @@ import (
 
 // 現在のユーザー情報を取得する
 func GetCurrentUserName(ctx context.Context) (string, error) {
-	// AWSの設定をロード
-	cfg, err := config.LoadDefaultConfig(ctx)
+	// AWSの設定をロード（デフォルトリージョンを設定）
+	cfg, err := config.LoadDefaultConfig(ctx, config.WithRegion("ap-northeast-1"))
 	if err != nil {
 		return "", fmt.Errorf("AWS設定のロード中にエラーが発生しました: %w", err)
 	}
@@ -42,8 +42,8 @@ type AccountRoleInfo struct {
 
 // スイッチロールの情報を取得する
 func GetSwitchRoleInfo(ctx context.Context, userName string) ([]AccountRoleInfo, error) {
-	// AWSの設定をロード
-	cfg, err := config.LoadDefaultConfig(ctx)
+	// AWSの設定をロード（デフォルトリージョンを設定）
+	cfg, err := config.LoadDefaultConfig(ctx, config.WithRegion("ap-northeast-1"))
 	if err != nil {
 		return nil, fmt.Errorf("AWS設定のロード中にエラーが発生しました: %w", err)
 	}
