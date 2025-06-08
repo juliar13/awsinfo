@@ -14,7 +14,14 @@ const version = "0.2.0"
 func main() {
 	// フラグの設定
 	var showVersion = flag.Bool("version", false, "バージョン情報を表示")
+	var showHelp = flag.Bool("help", false, "ヘルプを表示")
 	flag.Parse()
+
+	// ヘルプの表示
+	if *showHelp {
+		showUsage()
+		return
+	}
 
 	// バージョン情報の表示
 	if *showVersion {
@@ -27,6 +34,22 @@ func main() {
 
 	// 引数の解析
 	args := flag.Args()
+
+	// サブコマンドの処理
+	if len(args) > 0 && args[0] == "orginfo" {
+		// AWS Organizations情報を取得・表示
+		accounts, err := aws.GetOrganizationInfo(ctx)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "エラー: %v\n", err)
+			os.Exit(1)
+		}
+
+		// テーブル形式で出力
+		fmt.Print(aws.FormatAccountInfoTable(accounts))
+		return
+	}
+
+	// 従来の動作（ユーザー名による処理）
 	var userName string
 	var err error
 
@@ -66,4 +89,25 @@ func main() {
 		fmt.Println("123456789012 AdminSwitchRole")
 		fmt.Println("123456789013 AdminSwitchRole")
 	}
+}
+
+func showUsage() {
+	fmt.Println("awsinfo - AWSユーザーが切り替え可能なアカウントとロールを表示するCLIツール")
+	fmt.Println()
+	fmt.Println("使用方法:")
+	fmt.Println("  awsinfo [オプション] [ユーザー名]")
+	fmt.Println("  awsinfo orginfo")
+	fmt.Println()
+	fmt.Println("サブコマンド:")
+	fmt.Println("  orginfo    AWS Organizationsのアカウント情報をテーブル形式で表示")
+	fmt.Println()
+	fmt.Println("オプション:")
+	fmt.Println("  --version  バージョン情報を表示")
+	fmt.Println("  --help     このヘルプを表示")
+	fmt.Println()
+	fmt.Println("例:")
+	fmt.Println("  awsinfo                    # 現在のユーザーのスイッチロール情報を表示")
+	fmt.Println("  awsinfo user-name          # 指定したユーザーのスイッチロール情報を表示")
+	fmt.Println("  awsinfo orginfo            # AWS Organizationsアカウント情報を表示")
+	fmt.Println("  awsinfo --version          # バージョン情報を表示")
 }
