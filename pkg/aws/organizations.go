@@ -25,8 +25,8 @@ type AccountInfo struct {
 
 // GetOrganizationInfo retrieves information about all accounts in the organization
 func GetOrganizationInfo(ctx context.Context) ([]AccountInfo, error) {
-	// Load AWS configuration
-	cfg, err := config.LoadDefaultConfig(ctx)
+	// Load AWS configuration with default region
+	cfg, err := config.LoadDefaultConfig(ctx, config.WithRegion("ap-northeast-1"))
 	if err != nil {
 		return nil, fmt.Errorf("設定の読み込みに失敗しました: %w", err)
 	}
